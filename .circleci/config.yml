@@ -2,17 +2,6 @@
 # Stacks detected: artifact:go-executable:,deps:go:.
 version: 2.1
 jobs:
-  test-go:
-    # Install go modules and run tests
-    docker:
-      - image: cimg/go:1.20
-    steps:
-      - checkout
-      - run:
-          name: Run tests
-          command: gotestsum --junitfile junit.xml
-      - store_test_results:
-          path: junit.xml
   build-go-executables:
     # Build go executables and store them as artifacts
     docker:
