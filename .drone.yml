@@ -1,0 +1,39 @@
+kind: pipeline
+type: docker
+name: Staging Pipeline
+
+global-variables:
+  # Google registry 
+  registry_token: &registry_token FAMIMA_GCR_TOKEN
+  repo_path: &repo_path fmi-familymart-x/dana/test
+  registry: &registry asia-docker.pkg.dev
+  
+  # Docker & trim tags
+  dockerfile_path: &dockerfile_path Dockerfile
+  image_tag: &image_tag ${DRONE_TAG##hello-}
+  
+  # Bash env
+  environment: &default_environment
+    TAGS_VERSION: ${DRONE_TAG##hello-}
+    ENV: staging
+    
+trigger:
+  ref:
+    include:
+      - refs/tags/hello-v*.*.*-alpha
+    exclude:
+      - refs/heads/main
+      
+steps:
+  - name: Build and Push Image
+    image: plugins/gcr
+    settings: 
+      repo: *repo_path
+      registry: *registry
+      tags: *image_tag
+      dockerfile: *dockerfile_path
+      json_key:
+        from_secret: *registry_token
+    when:
+      status:
+      - success
